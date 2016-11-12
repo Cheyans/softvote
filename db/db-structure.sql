@@ -1,7 +1,45 @@
 DROP TABLE IF EXISTS votes;
+DROP TABLE IF EXISTS answers;
+DROP TABLE IF EXISTS questions;
+DROP TABLE IF EXISTS surveys;
+
+CREATE TABLE surveys (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  survey_name VARCHAR(256) NOT NULL,
+  start_dtm TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  end_dtm TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE questions (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  question TEXT CHARACTER SET utf8,
+  survey_id INTEGER NOT NULL,
+  display_order SMALLINT NOT NULL DEFAULT -1,
+  max_votes_per_voter INTEGER NOT NULL DEFAULT 1,
+  min_votes_per_voter INTEGER NOT NULL DEFAULT 1,
+  PRIMARY KEY (id),
+  FOREIGN KEY (survey_id) REFERENCES surveys (id)
+);
+
+CREATE TABLE answers (
+  id INTEGER NOT NULL AUTO_INCREMENT,
+  answer TEXT CHARACTER SET utf8,
+  question_id INTEGER NOT NULL,
+  display_order TINYINT NOT NULL DEFAULT -1,
+  PRIMARY KEY (id),
+  FOREIGN KEY (question_id) REFERENCES questions (id)
+);
 
 CREATE TABLE votes (
+  id INTEGER NOT NULL AUTO_INCREMENT,
   voter_id INTEGER NOT NULL,
-  vote VARCHAR(128) NOT NULL,
-  vote_id VARCHAR(128) NOT NULL
+  question_id INTEGER NOT NULL,
+  answer_id INTEGER NOT NULL,
+  vote_dtm TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  valid BIT NOT NULL DEFAULT 1,
+  ip VARCHAR(15) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (question_id) REFERENCES questions (id),
+  FOREIGN KEY (answer_id) REFERENCES answers (id)
 );
